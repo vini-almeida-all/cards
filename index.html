@@ -1,0 +1,1082 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BestSellersSection — Responsive Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue-600: #0033a0;
+      --text-primary: #303030;
+      --text-muted: #999999;
+      --surface: #ffffff;
+      --media-bg: #efefef;
+      --media-border: #bfbfbf;
+      --card-border: #c2c8d6;
+      --green: #189b4d;
+      --coral: #e42e47;
+      --carousel-gap: 32px;
+      --card-min-width: 230px;
+      --card-width: 230px;
+      --cards-per-view: 5;
+      --card-height: 520px;
+      --content-max: 1368px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--surface);
+      color: var(--text-primary);
+      font-family: "Nunito", Arial, sans-serif;
+    }
+
+    button, a { font: inherit; }
+
+    /* BestSellersSection — HUG vertically, full page width. */
+    .best-sellers-section {
+      width: 100%;
+      height: fit-content;
+      padding-block: 64px;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Figma: Fill container + max-width 1368 + 32px horizontal padding. */
+    .content-container {
+      width: 100%;
+      max-width: var(--content-max);
+      height: fit-content;
+      padding-inline: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 36px;
+      overflow: hidden;
+    }
+
+    /* Figma: Fill / Hug, vertical Auto Layout, gap 36. */
+    .section-header {
+      width: 100%;
+      height: fit-content;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 36px;
+    }
+
+    /* Figma: Fill / Hug, SPACE_BETWEEN + center. */
+    .header-row {
+      width: 100%;
+      height: fit-content;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0;
+    }
+
+    /* Figma: Fill / Hug, vertical, gap 20, right padding 16. */
+    .title-group {
+      width: auto;
+      min-width: 0;
+      height: fit-content;
+      flex: 1 1 0;
+      padding-right: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .eyebrow {
+      width: 100%;
+      margin: 0;
+      color: var(--blue-600);
+      font-family: "Bogart", "Noto Serif", Georgia, serif;
+      font-size: 21px;
+      font-weight: 500;
+      line-height: 24px;
+      overflow: visible;
+    }
+
+    .section-title {
+      width: 100%;
+      margin: 0;
+      color: var(--text-primary);
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 115%;
+      
+    }
+
+    /* Figma Button medium: HUG / HUG, 16x24 padding. */
+    .ranking-cta {
+      width: fit-content;
+      height: fit-content;
+      flex: 0 0 auto;
+      padding: 16px 24px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--blue-600);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 16px;
+      line-height: 16px;
+      font-weight: 800;
+      
+      cursor: pointer;
+    }
+
+    .ranking-cta:hover { filter: brightness(.92); }
+
+    /* Figma: Fill / Hug + WRAP + 12px gap. */
+    .category-chips {
+      width: 100%;
+      height: fit-content;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    /* CategoryChip: HUG contents, 12px vertical / 20px horizontal. */
+    .category-chip {
+      width: fit-content;
+      height: fit-content;
+      padding: 12px 20px;
+      border: 0;
+      border-radius: 999px;
+      box-shadow: inset 0 0 0 1px #bfbfbf;
+      background: transparent;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      line-height: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      
+    }
+
+    .category-chip[aria-pressed="true"] {
+      box-shadow: inset 0 0 0 1px var(--blue-600);
+      color: var(--blue-600);
+    }
+
+    /* ProductCarousel: integer cardsPerView, no peek, 32px gap between viewport and controls. */
+    .product-carousel {
+      width: 100%;
+      height: fit-content;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 32px;
+    }
+
+    /* Items slot: Fill horizontally, fixed 520px height, clipped. */
+    .carousel-viewport {
+      width: 100%;
+      height: var(--card-height);
+      flex: 0 0 var(--card-height);
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
+      scroll-snap-type: x proximity;
+      overscroll-behavior-x: contain;
+      cursor: grab;
+      touch-action: auto;
+    }
+
+    .carousel-viewport::-webkit-scrollbar { display: none; }
+    .carousel-viewport.is-dragging {
+      cursor: grabbing;
+      scroll-snap-type: none;
+      scroll-behavior: auto;
+      user-select: none;
+    }
+
+    .carousel-viewport.is-momentum,
+    .carousel-viewport.is-settling {
+      scroll-snap-type: none;
+      scroll-behavior: auto;
+    }
+
+    .carousel-track {
+      width: max-content;
+      height: 100%;
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: flex-start;
+      gap: var(--carousel-gap);
+      padding-right: 0;
+      transform: translate3d(0, 0, 0);
+      will-change: transform;
+    }
+
+    .carousel-track.is-edge-releasing {
+      transition: transform 220ms cubic-bezier(.22, .61, .36, 1);
+    }
+
+    /* ProductCard: minimum 230px. Final width is resolved by cardsPerView so
+       an integer number of cards fills the viewport exactly, without peek. */
+    .product-card {
+      width: var(--card-width);
+      min-width: var(--card-min-width);
+      height: var(--card-height);
+      flex: 0 0 var(--card-width);
+      padding: 20px;
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      overflow: hidden;
+      scroll-snap-align: start;
+      scroll-snap-stop: normal;
+    }
+
+    .product-card:last-child {
+      scroll-snap-align: end;
+    }
+
+    .product-media-link,
+    .product-title-link {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .product-media-link {
+      width: 100%;
+      flex: 0 0 auto;
+    }
+
+    /* ProductMedia: Fill width, fixed 210px, 12px padding, contain image. */
+    .product-media {
+      position: relative;
+      width: 100%;
+      height: 210px;
+      border: 1px solid var(--media-border);
+      border-radius: 12px;
+      background: var(--media-bg);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .product-media img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+      object-position: center;
+      pointer-events: none;
+    }
+
+    .product-tag {
+      width: fit-content;
+      height: fit-content;
+      border-radius: 999px;
+      padding: 6px 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 10px;
+      line-height: 7px;
+      font-weight: 800;
+      
+    }
+
+    .ranking-tag {
+      position: absolute;
+      z-index: 2;
+      top: 12px;
+      left: 12px;
+      background: var(--blue-600);
+    }
+
+    .special-tag {
+      align-self: flex-start;
+      background: var(--coral);
+    }
+
+    .special-tag--secondary {
+      background: #9fc5ff;
+      color: var(--blue-600);
+    }
+
+    /* ProductBody: Fill remaining height, SPACE_BETWEEN, 10px internal gap. */
+    .product-body {
+      width: 100%;
+      min-height: 0;
+      flex: 1 1 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    /* ProductInformation: Fill / Hug, vertical gap 16. */
+    .product-information {
+      width: 100%;
+      height: fit-content;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    /* ProductIdentity: Fill / Hug, gap 10. */
+    .product-identity {
+      width: 100%;
+      height: fit-content;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .product-title-link { width: 100%; }
+
+    .product-title {
+      width: 100%;
+      margin: 0;
+      color: rgba(0,0,0,.8);
+      font-size: 16px;
+      line-height: 18px;
+      font-weight: 700;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: visible;
+    }
+
+    .product-author {
+      width: 100%;
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 14px;
+      font-weight: 500;
+      overflow: visible;
+      text-overflow: ellipsis;
+    }
+
+    /* PriceBlock: Fill / Hug, 12px gap. */
+    .pricing {
+      width: 100%;
+      height: fit-content;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .discount-row {
+      width: 100%;
+      height: fit-content;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .discount-badge {
+      width: fit-content;
+      height: fit-content;
+      padding: 3px 5px;
+      border-radius: 3px;
+      background: var(--green);
+      color: #fff;
+      font-size: 10px;
+      line-height: 7px;
+      min-height: 19px;
+      font-weight: 700;
+      align-content: center;
+    }
+
+    .old-price {
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 8px;
+      font-weight: 700;
+      text-decoration: line-through;
+    }
+
+    .current-price {
+      width: 100%;
+      margin: 0;
+      color: var(--blue-600);
+      font-size: 16px;
+      line-height: 11px;
+      font-weight: 700;
+    }
+
+    .pix-price,
+    .store-availability {
+      width: 100%;
+      margin: 0;
+      font-size: 12px;
+      line-height: 8px;
+      font-weight: 500;
+    }
+
+    .store-availability {
+      margin-top:8px;
+    }
+
+    .pix-price { color: var(--green); }
+    .store-availability { color: var(--text-muted); }
+
+    /* AddToCartButtonContainer: Fill / Hug, horizontal Auto Layout, gap 4. */
+    .add-to-cart-container {
+      width: 100%;
+      height: fit-content;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Button: Fill / Hug with 44px minimum target. */
+    .add-to-cart {
+      width: 100%;
+      min-height: 44px;
+      height: fit-content;
+      padding: 12px 16px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: var(--blue-600);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 14px;
+      line-height: 16px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .add-to-cart:hover { filter: brightness(.92); }
+
+    .add-to-cart.is-added {
+      border-color: var(--blue-600);
+      background: #fff;
+      color: var(--blue-600);
+      filter: none;
+    }
+
+    .add-to-cart.is-added:hover {
+      background: #f5f8ff;
+      filter: none;
+    }
+
+    .add-to-cart svg { width: 18px; height: 18px; flex: 0 0 18px; }
+
+    /* CarouselControls: HUG / HUG, horizontal gap 12. */
+    .carousel-controls {
+      width: fit-content;
+      height: fit-content;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .carousel-arrow {
+      width: 32px;
+      height: 32px;
+      flex: 0 0 32px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: #d9d9d9;
+      color: #8e8e8e;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .carousel-arrow:hover:not(:disabled) { background: #cecece; color: #666; }
+    .carousel-arrow:disabled { opacity: .55; cursor: default; }
+    .carousel-arrow svg { width: 18px; height: 18px; }
+
+
+    /* =========================================================
+       TABLET REFERENCE — Figma frame 768px
+       Desktop above remains untouched.
+       No breakpoint threshold was annotated in Figma, so this
+       stage is intentionally anchored to the 768px reference.
+       ========================================================= */
+    @media (max-width: 768px) {
+      .best-sellers-section {
+        padding-block: 48px;
+      }
+
+      /* Figma Tablet: HeaderRow changes from horizontal to vertical,
+         Fill / Hug, 24px gap, left aligned. */
+      .header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 24px;
+      }
+
+      /* In Tablet the TitleGroup fills HeaderRow horizontally. */
+      .title-group {
+        width: 100%;
+        flex: 0 0 auto;
+      }
+
+      /* Figma Tablet: 28px / 36px. Eyebrow remains 21px / 24px. */
+      .section-title {
+        font-size: 28px;
+        line-height: 125%;
+      }
+    }
+
+
+    /* =========================================================
+       MOBILE
+       Transition is grounded in the ProductCarousel rule:
+       32px gutters + 230px + 32px gap + 230px = 556px viewport.
+       Below that useful width, cardsPerView resolves to one Fill card.
+       ========================================================= */
+    @media (max-width: 556px) {
+      /* Mobile keeps the Tablet section padding/orientation.
+         Only the properties that differ in the Figma Mobile frame
+         are overridden here. */
+
+      .title-group {
+        padding-right: 0;
+      }
+
+      .eyebrow {
+        font-size: 18px;
+        line-height: 20px;
+      }
+
+      .section-title {
+        font-size: 24px;
+        line-height: 125%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <section class="best-sellers-section" aria-labelledby="best-sellers-title">
+    <div class="content-container">
+      <header class="section-header">
+        <div class="header-row">
+          <div class="title-group">
+            <p class="eyebrow">Best-sellers</p>
+            <h2 class="section-title" id="best-sellers-title">Os mais vendidos nas nossas lojas nesta semana</h2>
+          </div>
+          <button class="ranking-cta" type="button">Ver ranking completo</button>
+        </div>
+
+        <div class="category-chips" role="group" aria-label="Categorias">
+          <button class="category-chip" type="button" aria-pressed="true">Geral</button>
+          <button class="category-chip" type="button" aria-pressed="false">Ficção</button>
+          <button class="category-chip" type="button" aria-pressed="false">Não-ficção</button>
+          <button class="category-chip" type="button" aria-pressed="false">Infantojuvenil</button>
+          <button class="category-chip" type="button" aria-pressed="false">HQ &amp; Mangás</button>
+          <button class="category-chip" type="button" aria-pressed="false">Filosofia &amp; Ensaios</button>
+        </div>
+      </header>
+
+      <div class="product-carousel" data-carousel>
+        <div class="carousel-viewport" data-viewport tabindex="0" aria-label="Produtos mais vendidos">
+          <div class="carousel-track" data-track>
+<article class="product-card" data-card>
+      <a class="product-media-link" href="#produto-1" aria-label="Ver Verity">
+        <div class="product-media"><span class="product-tag ranking-tag">#1 geral</span><img src="assets/verity.jpg" alt="Capa de Verity" /></div>
+      </a>
+      <div class="product-body">
+        <div class="product-information"><div class="product-identity"><a class="product-title-link" href="#produto-1"><h3 class="product-title">Verity</h3></a><p class="product-author">Colleen Hoover</p></div><div class="pricing"><div class="discount-row"><span class="discount-badge">30% OFF</span><span class="old-price">de R$ 64,90</span></div><p class="current-price">Por R$ 45,36</p><p class="pix-price">ou R$43,09 no PIX</p></div><p class="store-availability">45 lojas</p></div>
+        <div class="add-to-cart-container"><button class="add-to-cart" type="button" data-add><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 4h2l1.8 9.1a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 1.9-1.4L20 7H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="19" r="1.4" fill="currentColor"/><circle cx="17" cy="19" r="1.4" fill="currentColor"/></svg><span>ADICIONAR</span></button></div>
+      </div>
+    </article>
+<article class="product-card" data-card>
+      <a class="product-media-link" href="#produto-2" aria-label="Ver Cromos - Criando Memórias Mágicas">
+        <div class="product-media"><span class="product-tag ranking-tag">#2 geral</span><img src="assets/cromos.jpg" alt="Capa de Cromos - Criando Memórias Mágicas" /></div>
+      </a>
+      <div class="product-body">
+        <div class="product-information"><div class="product-identity"><a class="product-title-link" href="#produto-2"><h3 class="product-title">Cromos - Criando Memórias Mágicas</h3></a><p class="product-author">Panini</p></div><div class="pricing"><p class="current-price">Por R$ 15,00</p><p class="pix-price">ou R$ 14,25 no PIX</p></div><p class="store-availability">1 lojas</p></div>
+        <div class="add-to-cart-container"><button class="add-to-cart" type="button" data-add><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 4h2l1.8 9.1a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 1.9-1.4L20 7H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="19" r="1.4" fill="currentColor"/><circle cx="17" cy="19" r="1.4" fill="currentColor"/></svg><span>ADICIONAR</span></button></div>
+      </div>
+    </article>
+<article class="product-card" data-card>
+      <a class="product-media-link" href="#produto-3" aria-label="Ver Eu duvido você terminar este livro">
+        <div class="product-media"><span class="product-tag ranking-tag">#3 geral</span><img src="assets/eu-duvido-voce-terminar.jpg" alt="Capa de Eu duvido você terminar este livro" /></div>
+      </a>
+      <div class="product-body">
+        <div class="product-information"><span class="product-tag special-tag">LANÇAMENTO</span><div class="product-identity"><a class="product-title-link" href="#produto-3"><h3 class="product-title">Eu duvido você terminar este livro</h3></a><p class="product-author">Giuliana Mafra</p></div><div class="pricing"><div class="discount-row"><span class="discount-badge">10% OFF</span><span class="old-price">de R$ 59,90</span></div><p class="current-price">Por R$ 51,20</p><p class="pix-price">ou R$ 51,20 no PIX</p></div><p class="store-availability">38 lojas</p></div>
+        <div class="add-to-cart-container"><button class="add-to-cart" type="button" data-add><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 4h2l1.8 9.1a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 1.9-1.4L20 7H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="19" r="1.4" fill="currentColor"/><circle cx="17" cy="19" r="1.4" fill="currentColor"/></svg><span>ADICIONAR</span></button></div>
+      </div>
+    </article>
+<article class="product-card" data-card>
+      <a class="product-media-link" href="#produto-4" aria-label="Ver Copa do Mundo 2026 - Álbum Brochura">
+        <div class="product-media"><span class="product-tag ranking-tag">#4 geral</span><img src="assets/album-copa.jpg" alt="Capa de Copa do Mundo 2026 - Álbum Brochura" /></div>
+      </a>
+      <div class="product-body">
+        <div class="product-information"><div class="product-identity"><a class="product-title-link" href="#produto-4"><h3 class="product-title">Copa do Mundo 2026 - Álbum Brochura</h3></a><p class="product-author">Panini</p></div><div class="pricing"><div class="discount-row"><span class="discount-badge">2% OFF</span><span class="old-price">de R$ 24,90</span></div><p class="current-price">Por R$ 24,32</p><p class="pix-price">ou R$ 23,10 no PIX</p></div><p class="store-availability">2 lojas</p></div>
+        <div class="add-to-cart-container"><button class="add-to-cart" type="button" data-add><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 4h2l1.8 9.1a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 1.9-1.4L20 7H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="19" r="1.4" fill="currentColor"/><circle cx="17" cy="19" r="1.4" fill="currentColor"/></svg><span>ADICIONAR</span></button></div>
+      </div>
+    </article>
+<article class="product-card" data-card>
+      <a class="product-media-link" href="#produto-5" aria-label="Ver A hipótese do amor (sucesso do tiktok)">
+        <div class="product-media"><span class="product-tag ranking-tag">#5 geral</span><img src="assets/hipotese-do-amor.jpg" alt="Capa de A hipótese do amor" /></div>
+      </a>
+      <div class="product-body">
+        <div class="product-information"><div class="product-identity"><a class="product-title-link" href="#produto-5"><h3 class="product-title">A hipótese do amor (sucesso do tiktok)</h3></a><p class="product-author">Ali Hazelwood</p></div><div class="pricing"><div class="discount-row"><span class="discount-badge">23% OFF</span><span class="old-price">de R$ 64,90</span></div><p class="current-price">Por R$ 49,92</p><p class="pix-price">ou R$ 47,42 no PIX</p></div></div>
+        <div class="add-to-cart-container"><button class="add-to-cart" type="button" data-add><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 4h2l1.8 9.1a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 1.9-1.4L20 7H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="19" r="1.4" fill="currentColor"/><circle cx="17" cy="19" r="1.4" fill="currentColor"/></svg><span>ADICIONAR</span></button></div>
+      </div>
+    </article>
+<article class="product-card" data-card>
+      <a class="product-media-link" href="#produto-6" aria-label="Ver Flores para Algernon (Brochura)">
+        <div class="product-media"><span class="product-tag ranking-tag">#6 geral</span><img src="assets/flores-para-algernon.jpg" alt="Capa de Flores para Algernon" /></div>
+      </a>
+      <div class="product-body">
+        <div class="product-information"><span class="product-tag special-tag special-tag--secondary">EXCLUSIVO LEITURA</span><div class="product-identity"><a class="product-title-link" href="#produto-6"><h3 class="product-title">Flores para Algernon (Brochura)</h3></a><p class="product-author">Daniel Keyes</p></div><div class="pricing"><div class="discount-row"><span class="discount-badge">36% OFF</span><span class="old-price">de R$ 49,90</span></div><p class="current-price">Por R$ 30,16</p><p class="pix-price">ou R$ 31,75 no PIX</p></div><p class="store-availability">42 lojas</p></div>
+        <div class="add-to-cart-container"><button class="add-to-cart" type="button" data-add><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 4h2l1.8 9.1a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 1.9-1.4L20 7H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="19" r="1.4" fill="currentColor"/><circle cx="17" cy="19" r="1.4" fill="currentColor"/></svg><span>ADICIONAR</span></button></div>
+      </div>
+    </article>
+          </div>
+        </div>
+        <div class="carousel-controls" data-controls>
+          <button class="carousel-arrow" type="button" data-prev aria-label="Produto anterior">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="carousel-arrow" type="button" data-next aria-label="Próximo produto">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const carousel = document.querySelector('[data-carousel]');
+    const viewport = carousel.querySelector('[data-viewport]');
+    const track = carousel.querySelector('[data-track]');
+    const controls = carousel.querySelector('[data-controls]');
+    const prev = carousel.querySelector('[data-prev]');
+    const next = carousel.querySelector('[data-next]');
+    const cards = [...track.querySelectorAll('[data-card]')];
+
+    const minCardWidth = 230;
+    const gap = 32;
+
+    let cardsPerView = 1;
+    let cardWidth = minCardWidth;
+
+    function applyCardSizing() {
+      const availableWidth = viewport.clientWidth;
+
+      // How many cards can fit while every card remains at least 230px wide.
+      cardsPerView = Math.max(
+        1,
+        Math.min(
+          cards.length,
+          Math.floor((availableWidth + gap) / (minCardWidth + gap))
+        )
+      );
+
+      // Once the count is known, distribute the whole useful width equally.
+      // No leftover space, no intentional peek.
+      const resolvedWidth =
+        (availableWidth - gap * (cardsPerView - 1)) / cardsPerView;
+
+      cardWidth = Math.max(minCardWidth, resolvedWidth);
+
+      carousel.style.setProperty('--cards-per-view', String(cardsPerView));
+      carousel.style.setProperty('--card-width', `${cardWidth}px`);
+    }
+
+    function snapPositions() {
+      const maxScroll = Math.max(0, track.scrollWidth - viewport.clientWidth);
+      const positions = [];
+
+      for (const card of cards) {
+        const position = Math.max(0, Math.min(maxScroll, card.offsetLeft));
+
+        if (!positions.length || Math.abs(position - positions[positions.length - 1]) > 1) {
+          positions.push(position);
+        }
+
+        if (position >= maxScroll - 1) break;
+      }
+
+      if (!positions.length) positions.push(0);
+
+      // With integer cardsPerView this normally already equals the last card
+      // offset for the final view, but keep the physical edge as the authority.
+      if (Math.abs(maxScroll - positions[positions.length - 1]) > 1) {
+        positions.push(maxScroll);
+      } else {
+        positions[positions.length - 1] = maxScroll;
+      }
+
+      return positions;
+    }
+
+    function nearestSnapIndex() {
+      const positions = snapPositions();
+      let nearest = 0;
+      let nearestDistance = Infinity;
+
+      positions.forEach((position, index) => {
+        const distance = Math.abs(viewport.scrollLeft - position);
+        if (distance < nearestDistance) {
+          nearest = index;
+          nearestDistance = distance;
+        }
+      });
+
+      return nearest;
+    }
+
+    function updateControls() {
+      const positions = snapPositions();
+      const overflow = positions.length > 1;
+
+      controls.hidden = !overflow;
+      if (!overflow) return;
+
+      const epsilon = 2;
+      const maxScroll = positions[positions.length - 1];
+      prev.disabled = viewport.scrollLeft <= epsilon;
+      next.disabled = viewport.scrollLeft >= maxScroll - epsilon;
+    }
+
+    function stopSettling() {
+      if (settleFrame) cancelAnimationFrame(settleFrame);
+      settleFrame = 0;
+      viewport.classList.remove('is-settling');
+    }
+
+    function smootherStep(t) {
+      // Zero velocity at both ends, so the snap does not "kick" after the drift.
+      return t * t * t * (t * (t * 6 - 15) + 10);
+    }
+
+    function animateTo(target, smooth = true) {
+      stopSettling();
+
+      const start = viewport.scrollLeft;
+      const distance = target - start;
+
+      if (!smooth || Math.abs(distance) <= 1 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        viewport.scrollLeft = target;
+        updateControls();
+        return;
+      }
+
+      // Longer than native smooth scrolling, but distance-aware so tiny corrections don't feel sluggish.
+      const duration = Math.max(360, Math.min(560, 360 + Math.abs(distance) * 0.55));
+      const startedAt = performance.now();
+
+      viewport.classList.add('is-settling');
+
+      const tick = (now) => {
+        const progress = Math.min(1, (now - startedAt) / duration);
+        const eased = smootherStep(progress);
+
+        viewport.scrollLeft = start + distance * eased;
+
+        if (progress < 1) {
+          settleFrame = requestAnimationFrame(tick);
+          return;
+        }
+
+        settleFrame = 0;
+        viewport.scrollLeft = target;
+        viewport.classList.remove('is-settling');
+        updateControls();
+      };
+
+      settleFrame = requestAnimationFrame(tick);
+    }
+
+    function goToSnap(index, smooth = true) {
+      const positions = snapPositions();
+      const targetIndex = Math.max(0, Math.min(positions.length - 1, index));
+      animateTo(positions[targetIndex], smooth);
+    }
+
+    function goBySnap(delta) {
+      goToSnap(nearestSnapIndex() + delta);
+    }
+
+    prev.addEventListener('click', () => goBySnap(-1));
+    next.addEventListener('click', () => goBySnap(1));
+    viewport.addEventListener('scroll', updateControls, { passive: true });
+
+    let dragging = false;
+    let startX = 0;
+    let startScroll = 0;
+    let moved = false;
+    let lastX = 0;
+    let lastTime = 0;
+    let velocity = 0;
+    let momentumFrame = 0;
+    let settleFrame = 0;
+    let suppressClicksUntil = 0;
+    let edgeOffset = 0;
+
+    function rubberBandDistance(distance) {
+      // Diminishing return with a larger elastic range at the physical edges.
+      // The visual overscroll approaches, but never exceeds, 128px.
+      return Math.tanh(Math.max(0, distance) / 190) * 128;
+    }
+
+    function setEdgeOffset(value, animate = false) {
+      edgeOffset = value;
+
+      if (animate) {
+        track.classList.add('is-edge-releasing');
+      } else {
+        track.classList.remove('is-edge-releasing');
+      }
+
+      track.style.transform = `translate3d(${value}px, 0, 0)`;
+    }
+
+    function releaseEdge() {
+      if (Math.abs(edgeOffset) < 0.5) {
+        setEdgeOffset(0, false);
+        return;
+      }
+
+      setEdgeOffset(0, true);
+
+      const cleanup = () => {
+        track.classList.remove('is-edge-releasing');
+        track.removeEventListener('transitionend', cleanup);
+      };
+
+      track.addEventListener('transitionend', cleanup);
+    }
+
+    function stopMomentum() {
+      if (momentumFrame) cancelAnimationFrame(momentumFrame);
+      momentumFrame = 0;
+      viewport.classList.remove('is-momentum');
+    }
+
+    function settleToNearest(smooth = true) {
+      viewport.classList.remove('is-momentum');
+
+      const positions = snapPositions();
+      const target = positions[nearestSnapIndex()] ?? 0;
+
+      if (Math.abs(viewport.scrollLeft - target) <= 1) {
+        updateControls();
+        return;
+      }
+
+      animateTo(target, smooth);
+    }
+
+    function startMomentum(initialVelocity) {
+      stopMomentum();
+
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || Math.abs(initialVelocity) < 0.04) {
+        settleToNearest();
+        return;
+      }
+
+      viewport.classList.add('is-momentum');
+      let currentVelocity = initialVelocity;
+      let previousTime = performance.now();
+
+      const tick = (now) => {
+        const dt = Math.min(32, now - previousTime);
+        previousTime = now;
+
+        const maxScroll = Math.max(0, track.scrollWidth - viewport.clientWidth);
+        const nextScroll = Math.max(0, Math.min(maxScroll, viewport.scrollLeft + currentVelocity * dt));
+        const hitEdge = nextScroll === 0 || nextScroll === maxScroll;
+
+        viewport.scrollLeft = nextScroll;
+        currentVelocity *= Math.pow(0.92, dt / 16.67);
+
+        if (Math.abs(currentVelocity) < 0.02 || hitEdge) {
+          momentumFrame = 0;
+          window.setTimeout(settleToNearest, 50);
+          return;
+        }
+
+        momentumFrame = requestAnimationFrame(tick);
+      };
+
+      momentumFrame = requestAnimationFrame(tick);
+    }
+
+    viewport.addEventListener('pointerdown', (event) => {
+      // Touch/pen keep the browser's native inertial scrolling. Mouse gets drag + release momentum.
+      if (event.pointerType !== 'mouse') return;
+      if (event.button !== 0) return;
+
+      // A press on an interactive element must remain a normal click/tap.
+      if (event.target.closest('a, button, input, select, textarea, [role="button"]')) return;
+
+      stopMomentum();
+      stopSettling();
+      track.classList.remove('is-edge-releasing');
+      if (Math.abs(edgeOffset) > 0.5) setEdgeOffset(0, false);
+
+      dragging = true;
+      moved = false;
+      startX = event.clientX;
+      startScroll = viewport.scrollLeft;
+      lastX = event.clientX;
+      lastTime = performance.now();
+      velocity = 0;
+
+      viewport.classList.add('is-dragging');
+      viewport.setPointerCapture(event.pointerId);
+    });
+
+    viewport.addEventListener('pointermove', (event) => {
+      if (!dragging) return;
+
+      const now = performance.now();
+      const dx = event.clientX - startX;
+      const dt = Math.max(1, now - lastTime);
+      const frameScrollDelta = -(event.clientX - lastX);
+
+      if (Math.abs(dx) > 5) moved = true;
+
+      // Smooth release velocity so the carousel feels loose before it snaps.
+      const instantVelocity = frameScrollDelta / dt;
+      velocity = velocity * 0.72 + instantVelocity * 0.28;
+
+      const requestedScroll = startScroll - dx;
+      const maxScroll = Math.max(0, track.scrollWidth - viewport.clientWidth);
+
+      if (requestedScroll < 0) {
+        viewport.scrollLeft = 0;
+        setEdgeOffset(rubberBandDistance(-requestedScroll), false);
+      } else if (requestedScroll > maxScroll) {
+        viewport.scrollLeft = maxScroll;
+        setEdgeOffset(-rubberBandDistance(requestedScroll - maxScroll), false);
+      } else {
+        if (Math.abs(edgeOffset) > 0.5) setEdgeOffset(0, false);
+        viewport.scrollLeft = requestedScroll;
+      }
+
+      lastX = event.clientX;
+      lastTime = now;
+    });
+
+    function endDrag(event) {
+      if (!dragging) return;
+
+      dragging = false;
+      viewport.classList.remove('is-dragging');
+
+      if (viewport.hasPointerCapture(event.pointerId)) {
+        viewport.releasePointerCapture(event.pointerId);
+      }
+
+      if (moved) {
+        suppressClicksUntil = performance.now() + 180;
+
+        if (Math.abs(edgeOffset) > 0.5) {
+          // At either boundary the overscroll is only visual; spring back to the valid edge.
+          releaseEdge();
+          window.setTimeout(settleToNearest, 220);
+        } else {
+          startMomentum(velocity);
+        }
+      } else {
+        releaseEdge();
+        settleToNearest();
+      }
+    }
+
+    viewport.addEventListener('pointerup', endDrag);
+    viewport.addEventListener('pointercancel', endDrag);
+
+    viewport.addEventListener('click', (event) => {
+      if (performance.now() < suppressClicksUntil && event.target.closest('a,button')) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    }, true);
+
+    document.querySelectorAll('.category-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.category-chip').forEach(item => item.setAttribute('aria-pressed', 'false'));
+        chip.setAttribute('aria-pressed', 'true');
+      });
+    });
+
+    document.addEventListener('click', (event) => {
+      const add = event.target.closest('[data-add]');
+
+      if (add) {
+        // ProductCard adds exactly one unit. Keep a persistent "added" state afterward.
+        if (add.classList.contains('is-added')) return;
+
+        add.classList.add('is-added');
+        add.setAttribute('aria-pressed', 'true');
+        add.querySelector('span').textContent = 'ADICIONADO';
+      }
+
+      if (event.target.closest('.product-title-link,.product-media-link')) {
+        event.preventDefault();
+      }
+    });
+
+    let resizeFrame = 0;
+
+    window.addEventListener('resize', () => {
+      if (resizeFrame) cancelAnimationFrame(resizeFrame);
+
+      resizeFrame = requestAnimationFrame(() => {
+        resizeFrame = 0;
+        stopMomentum();
+        stopSettling();
+        applyCardSizing();
+        settleToNearest(false);
+        updateControls();
+      });
+    });
+
+    // Native touch/trackpad scrolling is allowed to stay loose while moving,
+    // then settles to the closest valid position, including the real maxScroll edge.
+    if ('onscrollend' in viewport) {
+      viewport.addEventListener('scrollend', () => {
+        if (!dragging && !momentumFrame && !settleFrame && Math.abs(edgeOffset) < 0.5) {
+          settleToNearest();
+        }
+      });
+    }
+
+    applyCardSizing();
+    updateControls();
+  </script>
+</body>
+</html>
